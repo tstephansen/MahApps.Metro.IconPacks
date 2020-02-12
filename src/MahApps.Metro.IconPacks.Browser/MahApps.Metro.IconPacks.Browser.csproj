@@ -15,6 +15,7 @@
         <OutputType>WinExe</OutputType>
         <NoWarn>SA1652</NoWarn>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>mahappslogo.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\MahApps.Metro.IconPacks.Core\MahApps.Metro.IconPacks.Core.csproj" />

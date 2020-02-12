@@ -64,7 +64,7 @@ namespace MahApps.Metro.IconPacks.Browser.ViewModels
         private void PrepareFiltering()
         {
             this._iconsCollectionView = CollectionViewSource.GetDefaultView(this.Icons);
-            this._iconsCollectionView.Filter = o => this.FilterIconsPredicate(this.FilterText, (IIconViewModel) o);
+            this._iconsCollectionView.Filter = o => this.FilterIconsPredicate(this.FilterText, (IIconViewModel)o);
         }
 
         private bool FilterIconsPredicate(string filterText, IIconViewModel iconViewModel)
@@ -150,7 +150,7 @@ namespace MahApps.Metro.IconPacks.Browser.ViewModels
                     CanExecuteDelegate = x => (x != null),
                     ExecuteDelegate = x => Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        var icon = (IIconViewModel) x;
+                        var icon = (IIconViewModel)x;
                         var text = $"<iconPacks:{icon.IconPackType.Name} Kind=\"{icon.Name}\" />";
                         Clipboard.SetDataObject(text);
                     }))
@@ -162,7 +162,7 @@ namespace MahApps.Metro.IconPacks.Browser.ViewModels
                     CanExecuteDelegate = x => (x != null),
                     ExecuteDelegate = x => Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        var icon = (IIconViewModel) x;
+                        var icon = (IIconViewModel)x;
                         var text = $"{{iconPacks:{icon.IconPackType.Name.Replace("PackIcon", "")} Kind={icon.Name}}}";
                         Clipboard.SetDataObject(text);
                     }))
@@ -174,12 +174,31 @@ namespace MahApps.Metro.IconPacks.Browser.ViewModels
                     CanExecuteDelegate = x => (x != null),
                     ExecuteDelegate = x => Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        var icon = (IIconViewModel) x;
+                        var icon = (IIconViewModel)x;
                         // The UWP type is in WPF app not available
                         var text = $"<iconPacks:{icon.IconPackType.Name.Replace("PackIcon", "PathIcon")} Kind=\"{icon.Name}\" />";
                         Clipboard.SetDataObject(text);
                     }))
                 };
+            this.CopyToClipboardAsPathData = new SimpleCommand
+            {
+                CanExecuteDelegate = x => (x != null),
+                ExecuteDelegate = x => Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    var viewModel = (IIconViewModel)x;
+                    var iconType = IconPackType.ToString().Split('.')[3];
+                    var data = PathHelper.GetTypeFromString(iconType, viewModel.Name);
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        var text = $"<Viewbox>\n\t<Path Data=\"{data}\"\n\t\t  Fill=\"#FFFFFFFF\" \n\t\t  SnapsToDevicePixels=\"False\" \n\t\t  UseLayoutRounding=\"False\" \n\t\t  Stretch=\"Uniform\"/>\n</Viewbox>";
+                        Clipboard.SetDataObject(text);
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Unable to find path data.");
+                    }
+                }))
+            };
         }
 
         public ICommand CopyToClipboard { get; }
@@ -187,6 +206,8 @@ namespace MahApps.Metro.IconPacks.Browser.ViewModels
         public ICommand CopyToClipboardAsContent { get; }
 
         public ICommand CopyToClipboardAsPathIcon { get; }
+
+        public ICommand CopyToClipboardAsPathData { get; }
 
         public string Name { get; set; }
 
